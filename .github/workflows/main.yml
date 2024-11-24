@@ -1,0 +1,48 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Kör när det sker en push till main-branchen
+      - develop  # Lägg till om du vill inkludera develop-branchen
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Steg 1: Checka ut koden från repository
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    # Steg 2: Ställ in Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Steg 3: Cache Docker-lager för snabbare byggtid
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+
+    # Steg 4: Logga in på Docker Hub
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Steg 5: Bygg Docker-bilden med dynamisk tagg
+    - name: Build Docker Image
+      run: |
+        TAG=$(echo ${{ github.ref_name }} | sed 's/[^a-zA-Z0-9.-]/-/g')
+        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache \
+                            --cache-to type=local,dest=/tmp/.buildx-cache \
+                            -t ${{ secrets.DOCKER_USERNAME }}/frontend-bookning:$TAG \
+                            -t ${{ secrets.DOCKER_USERNAME }}/frontend-bookning:latest \
+                            --push .
+
+    # Steg 6: Pusha bilden till Docker Hub
+    - name: Push Docker Image
+      run: |
+        echo "Docker image pushed with tags: $TAG and latest"
