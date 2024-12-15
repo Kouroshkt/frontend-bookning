@@ -2,19 +2,20 @@ import { Link } from "react-router-dom";
 import styled from 'styled-components';
 
 export default function Navigation() {
-  const user= JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
   return (
     <StyledNavbar>
-        <StyledHome to="/">Hem</StyledHome>
+      <StyledHome to="/">Hem</StyledHome>
       <ul>
         <li>
-          {!user ? <Link to="/signin">Logga in</Link> : 
-          <Link onClick={()=>{localStorage.clear();
-            window.location.reload();
-          }}>Logga ut</Link>}
+          {!user ? <Link to="/signin">Logga in</Link> :
+            <Link onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}>Logga ut</Link>}
         </li>
       </ul>
-      </StyledNavbar>
+    </StyledNavbar>
   );
 }
 
