@@ -1,62 +1,90 @@
 import { Link } from "react-router-dom";
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export default function Navigation() {
   const user = JSON.parse(localStorage.getItem("user"));
   return (
     <StyledNavbar>
-      <StyledHome to="/">Hem</StyledHome>
-      <ul>
-        <li>
-          {!user ? <Link to="/signin">Logga in</Link> :
-            <Link onClick={() => {
-              localStorage.clear();
-              window.location.reload();
-            }}>Logga ut</Link>}
-        </li>
-      </ul>
+      <Logo to="/">MyCarApp</Logo>
+      <Menu>
+        <MenuItem>
+          {!user ? (
+            <StyledLink to="/signin">Logga in</StyledLink>
+          ) : (
+            <StyledLink
+              as="a"
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+            >
+              Logga ut
+            </StyledLink>
+          )}
+        </MenuItem>
+      </Menu>
     </StyledNavbar>
   );
 }
 
-const StyledNavbar = styled(Link)`
+// Styled-components CSS
+const StyledNavbar = styled.nav`
   display: flex;
-  justify-content: end;
-  height: 80px;
-  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #1e3c72, #2a5298); /* Blå gradient */
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const Logo = styled(Link)`
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
   text-decoration: none;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: transform 0.3s ease;
 
-  ul {
-    align-items: center;
-    display: flex;
-    margin-right: 15px;
-
-    li {
-      list-style: none;
-
-      a {
-        color: #1820bc;
-        margin: 20px;
-        font-size: 20px;
-        text-decoration: none;
-
-        @media (min-width: 768px) and (max-width: 1060px) {
-          margin: 15px;
-        }
-      }
-    }
+  &:hover {
+    transform: scale(1.1);
   }
 `;
 
-const StyledHome = styled(Link)`
-  align-items: center;
-  color: #1820bc;
+const Menu = styled.ul`
   display: flex;
-  font-size: 28px;
-  font-weight: 500;
-  width: auto;
-  margin: auto;
-  margin-left: 25px;
-  border:none;
+  list-style: none;
+  gap: 1.5rem;
+ 
+`;
+
+const MenuItem = styled.li`
+  position: relative;
+`;
+
+const StyledLink = styled(Link)`
+  color: white;
+  font-size: 1rem;
   text-decoration: none;
-`
+  position: relative;
+  font-weight: 500;
+
+  &:hover {
+    color: #c0dffc;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: white;
+    bottom: -4px;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+`;
