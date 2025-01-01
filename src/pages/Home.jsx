@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useFetchData } from "../Hooks/useFetchData";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const {allCars, cities } = useFetchData();
@@ -97,6 +98,7 @@ export default function Home() {
         {cars.length > 0 && (
           cars.map((car) => (
             <StyledCarItem key={car.id}>
+              <CarLink to={`/carinfo/${car.id}`}>
               <TitleCar>{car.brand} {car.model}</TitleCar>
               <DescriptionCar>
                 {car.color} ({car.seats} säten)
@@ -106,6 +108,7 @@ export default function Home() {
               </DescriptionCar>
               <CityCar>{car.city.cityName}</CityCar>
               <img src={car.image} alt="Car image" />
+              </CarLink>
             </StyledCarItem>
           ))
         )}
@@ -113,6 +116,9 @@ export default function Home() {
     </StyledContainer>
   );
 }
+const CarLink=styled(Link)`
+
+`
 const CityCar=styled.h4`
 color: blue;
 `
