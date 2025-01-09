@@ -2,18 +2,32 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useFetchData } from "../Hooks/useFetchData";
 import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+
 
 export default function Home() {
-  const {allCars, cities } = useFetchData();
+  const { categories, cities } = useFetchData();
   const [categoriesByCityId, setCategoriesByCityId] = useState([]);
   const [cityId, setCityId] = useState(null);
   const [categoryId, setCategoryId] = useState(null);
   const [cars, setCars] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const today = new Date();
   const baseUrl = "http://localhost:8080";
-  useEffect(() => {
-    setCars(allCars || []);
-  }, [allCars]);
-  
+
+  const formatDate = (date) => {
+    if (!(date instanceof Date) || isNaN(date)) {
+      console.warn("Invalid date provided:", date);
+      return ""; // Returnera en tom sträng för ogiltiga datum
+    }
+    return new Intl.DateTimeFormat("sv-SE", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  };
+
   useEffect(() => {
     if (cityId !== null) {
       async function fetchCategoriesByCityId() {
@@ -30,26 +44,37 @@ export default function Home() {
   }, [cityId]);
 
   const ShowCar = async () => {
-    if (!cityId || !categoryId) {
-      alert("Vänligen välj en stad och en biltyp.");
+    if (!cityId || !categoryId || !startDate || !endDate) {
+      alert("För att fortsätta, vänligen fyll i alla obligatoriska fält.");
       return;
     }
 
     try {
-      const response = await fetch(`${baseUrl}/car/getcar?cityId=${cityId}&carCategoryId=${categoryId}`);
+      const formattedStartDate = formatDate(new Date(startDate));
+      const formattedEndDate = formatDate(new Date(endDate));
+      const response = await fetch(`${baseUrl}/car/getcarbyDate?cityId=${cityId}
+        &carCategoryId=${categoryId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
       const data = await response.json();
-      console.log(data);
+      console.log(data)
       setCars(data || []);
     } catch (error) {
       console.error("Failed to fetch cars:", error);
     }
   };
-  const ShowAllCar = async () => {
-    setCars(allCars);
-  };
 
   return (
     <StyledContainer>
+      <StyledTitle> Våras kategori bilar </StyledTitle>
+      <StyledCategories>
+        {categories.map((category) => (category.id < 6 &&
+          <StyledCategoryItem>
+            <StyledTitle>{category.categoryName}</StyledTitle>
+            <img src={category.categoryImage} />
+            <p>{category.description}</p>
+          </StyledCategoryItem>
+        ))
+        }
+      </StyledCategories>
       <StyledForm>
         <StyledSelect
           onChange={(e) => {
@@ -89,9 +114,25 @@ export default function Home() {
             </option>
           ))}
         </StyledSelect>
-
+        <StyledLabel>Hämtas: </StyledLabel>
+        <StyledDatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          dateFormat="yyyy-MM-dd"
+          placeholderText="Välj datum"
+          minDate={today}
+          />
+        <StyledLabel>Lämnas: </StyledLabel>
+        <StyledDatePicker
+          selected={endDate}
+          onChange={(date) => setEndDate(date)}
+          dateFormat="yyyy-MM-dd"
+          placeholderText="Välj datum"
+          minDate={startDate}
+          />
+          </StyledForm>
+      <StyledForm>
         <StyledButton onClick={() => ShowCar()}>Sök</StyledButton>
-        <StyledButton onClick={() => ShowAllCar()}>Vissa alla bilar</StyledButton>
       </StyledForm>
 
       <StyledCarList>
@@ -99,15 +140,15 @@ export default function Home() {
           cars.map((car) => (
             <StyledCarItem key={car.id}>
               <CarLink to={`/carinfo/${car.id}`}>
-              <TitleCar>{car.brand} {car.model}</TitleCar>
-              <DescriptionCar>
-                {car.color} ({car.seats} säten)
-              </DescriptionCar>
-              <DescriptionCar>
-                {car.carCategory.categoryName}
-              </DescriptionCar>
-              <CityCar>{car.city.cityName}</CityCar>
-              <img src={car.image} alt="Car image" />
+                <TitleCar>{car.brand} {car.model}</TitleCar>
+                <DescriptionCar>
+                  {car.color} ({car.seats} säten)
+                </DescriptionCar>
+                <DescriptionCar>
+                  {car.carCategory.categoryName}
+                </DescriptionCar>
+                <CityCar>{car.city.cityName}</CityCar>
+                <img src={car.image} alt="Car image" />
               </CarLink>
             </StyledCarItem>
           ))
@@ -116,10 +157,32 @@ export default function Home() {
     </StyledContainer>
   );
 }
-const CarLink=styled(Link)`
+const StyledLabel = styled.label`
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  display: block;
+`;
+const StyledTitle = styled.h2`
+color:#333;
+text-align: center;
+`;
+const StyledDatePicker = styled(DatePicker)`
+  padding: 0.8rem;
+  font-size: 1rem;
+  width: 200px;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  &:focus {
+    border-color: #2a5298;
+  }
+`;
+const CarLink = styled(Link)`
 
 `
-const CityCar=styled.h4`
+const CityCar = styled.h4`
 color: blue;
 `
 const DescriptionCar = styled.p`
@@ -138,15 +201,15 @@ const StyledForm = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
 `;
-
 const StyledSelect = styled.select`
-  padding: 0.5rem;
+  padding: 0.8rem;
   font-size: 1rem;
-  width: 250px;
-  border: 1px solid #ccc;
+  width: 200px;
+  border: 1px solid #28a745;
   border-radius: 5px;
   background: white;
   &:hover {
@@ -154,12 +217,14 @@ const StyledSelect = styled.select`
   }
 `;
 
+
+
 const StyledButton = styled.button`
   padding: 0.8rem 1.2rem;
   font-size: 1rem;
-  width: 250px;
+  width: 200px;
   color: white;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  background: #28a745;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -178,6 +243,13 @@ const StyledCarList = styled.div`
   flex-wrap: wrap;
   gap: 1.5rem;
 `;
+const StyledCategories = styled.div`
+display: flex;
+justify-content: center;
+padding-bottom: 1rem;
+flex-wrap: wrap;
+gap: 1.5rem;
+`;
 
 const StyledCarItem = styled.div`
   background: white;
@@ -189,7 +261,7 @@ const StyledCarItem = styled.div`
   img {
     width: 300px; 
     height: 200px; 
-    object-fit: contain; /* Skalar proportionellt utan att klippa */
+    object-fit: contain;
     border-radius: 5px;
     margin-top: 1rem;
   }
@@ -198,6 +270,21 @@ const StyledCarItem = styled.div`
     img {
       transform: scale(1.5);
     }
+  }
+`;
+const StyledCategoryItem = styled.div`
+background: #566be598;
+border-radius: 5px;
+font-size: large;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+padding: 1rem;
+text-align: center;
+img {
+    width: 300px; 
+    height: 200px; 
+    object-fit: contain;
+    border-radius: 5px;
+    margin-top: 1rem;
   }
 `;
 
