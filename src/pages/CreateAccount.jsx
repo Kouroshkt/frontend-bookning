@@ -9,7 +9,6 @@ export default function CreateAccount() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [repetPassword, setRepetPassword] = useState("");
-    const [address, setAddress] = useState("");
     const [error, setError] = useState("");
 
     const handleAccount = async (event) => {
@@ -23,15 +22,21 @@ export default function CreateAccount() {
             return;
         }
 
-        const nyUser = { name, lastName, email, username, password, address };
+        const nyUser = { name, lastName, email, username, password };
         try {
             const response = await axios.post("http://localhost:8080/user/adduser", nyUser);
             console.log("Konto skapat", response.data);
             setError("");
-            window.location.href = "/signin";
+            localStorage.setItem("user", JSON.stringify(response.data));
+            window.location.href = "/";
         } catch (err) {
-            setError("Kan inte koppla till server. Försök igen senare.");
-            console.error(err);
+            if (err.response && err.response.status === 409) {
+                alert("E-postadressen är redan registrerad.");
+                window.location.reload();
+            } else {
+                setError("Kan inte koppla till server. Försök igen senare.");
+            }
+            console.error(err); 
         }
     };
 
@@ -39,11 +44,12 @@ export default function CreateAccount() {
         <>
             <FormContainer>
                 <CreateForm onSubmit={handleAccount}>
-                    <h1>Skapa Konto</h1>
+                    <StyledTitle>Skapa Konto</StyledTitle>
                     {error && <ErrorMessage>{error}</ErrorMessage>}
                     <label htmlFor="name">Namn</label>
                     <input
                         id="name"
+                        value={name}
                         type="text"
                         onChange={(event) => setName(event.target.value)}
                         placeholder="Förnamn"
@@ -52,6 +58,7 @@ export default function CreateAccount() {
                     <label htmlFor="lastName">Efternamn</label>
                     <input
                         id="lastName"
+                        value={lastName}
                         type="text"
                         onChange={(event) => setLastName(event.target.value)}
                         placeholder="Efternamn"
@@ -60,6 +67,7 @@ export default function CreateAccount() {
                     <label htmlFor="email">Email</label>
                     <input
                         id="email"
+                        value={email}
                         type="email"
                         onChange={(event) => setEmail(event.target.value)}
                         placeholder="E-postadress"
@@ -68,6 +76,7 @@ export default function CreateAccount() {
                     <label htmlFor="username">Användarnamn</label>
                     <input
                         id="username"
+                        value={username}
                         type="text"
                         onChange={(event) => setUsername(event.target.value)}
                         placeholder="Användarnamn"
@@ -76,6 +85,7 @@ export default function CreateAccount() {
                     <label htmlFor="password">Lösenord</label>
                     <input
                         id="password"
+                        value={password}
                         type="password"
                         onChange={(event) => setPassword(event.target.value)}
                         placeholder="Lösenord"
@@ -89,14 +99,6 @@ export default function CreateAccount() {
                         placeholder="Bekräfta lösenord"
                         required
                     />
-                    <label htmlFor="address">Adress</label>
-                    <input
-                        id="address"
-                        type="text"
-                        onChange={(event) => setAddress(event.target.value)}
-                        placeholder="Adress"
-                        required
-                    />
                     <button type="submit">Skapa konto</button>
                 </CreateForm>
             </FormContainer>
@@ -104,7 +106,9 @@ export default function CreateAccount() {
     );
 }
 
-// Styled-components
+const StyledTitle=styled.h1`
+text-align: center;
+`;
 const FormContainer = styled.div`
     display: flex;
     justify-content: center;
@@ -136,6 +140,7 @@ const CreateForm = styled.form`
         background: #1e3c72;
         color: white;
         border: none;
+        font-size: 1rem;
         border-radius: 4px;
         cursor: pointer;
         font-weight: bold;
