@@ -1,81 +1,273 @@
 import styled from "styled-components";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useFetchData } from "../Hooks/useFetchData";
-import { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useState } from "react";
+import axios from "axios";
 
 export function CarInfo() {
-  const { carId } = useParams();
+  const { carId, startDate, endDate , rentalDays} = useParams();
   const { allCars } = useFetchData();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [checkDate, setCheckDate] = useState(null);
-  const today = new Date();
-  const formatDate = (date) => date.toISOString().split("T")[0];
-  const baseUrl = "http://localhost:8080";
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [carsAddress, setCarsAddress] = useState("");
+  const [payment, setPayment] = useState("");
+  const [error, setError] = useState("");
+  const { cities, paymentsOptions } = useFetchData();
 
 
   const car = allCars.find((car) => car.id === parseInt(carId, 10));
   if (!car) {
     return <StyledMessage>Bilen kunde inte hittas</StyledMessage>;
   }
-  async function CheckDate() {
-    try {
-      const formattedStartDate = formatDate(new Date(startDate)); 
-      const formattedEndDate = formatDate(new Date(endDate));
-      const response = await fetch(`${baseUrl}/carbookning/carcheck?
-        carId=${carId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
-      const data = await response.json();
-      setCheckDate(data);
-    } catch (error) {
-      console.error("Failed to fetch CheckDate")
+  let carPrice= parseFloat(car.price);
+  let totalPrice=rentalDays*carPrice;
+  const handleLogin = async () => {
+    if (!username || !password) {
+      return setError("Glöm inte att fylla i användarnamn och lösenord.");
     }
-    console.log(data)
+    try {
+      const response = await axios.post("http://localhost:8080/user/login", {
+        username,
+        password,
+      });
+      localStorage.setItem("user", JSON.stringify(response.data));
+      window.location.reload();
 
-  }
+    } catch (err) {
+      setError("Inloggning misslyckades. Kontrollera dina uppgifter.");
+      console.error(err);
+    }
+  };
 
   return (
     <StyledCarInfoContainer>
-      <StyledCarImage src={`http://localhost:3000/${car.image}`} alt={`${car.brand} ${car.model}`} />
+      <StyledCarImage
+        src={`http://localhost:3000/${car.image}`}
+        alt={`${car.brand} ${car.model}`}
+      />
       <StyledDetails>
-        <StyledTitle>{car.brand} {car.model}</StyledTitle>
-        <StyledInfo>Färg: {car.color}</StyledInfo>
-        <StyledInfo>Antal säten: {car.seats}</StyledInfo>
-        <StyledInfo>Kategori: {car.carCategory.categoryName}</StyledInfo>
-        <StyledInfo>Stad: {car.city.cityName}</StyledInfo>
-        <StyledInfo>{car.carCategory.description}</StyledInfo>
-        <div>
-          <StyledLabel>Hämtas: </StyledLabel>
-          <StyledDatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            dateFormat="yyyy-MM-dd"
-            placeholderText="Välj datum"
-            minDate={today}
-          />
-        </div>
-        <div>
-          <StyledLabel>Lämnas: </StyledLabel>
-          <StyledDatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            dateFormat="yyyy-MM-dd"
-            placeholderText="Välj datum"
-            minDate={startDate}
-          />
-        </div>
-        <TidInformation>Hämtning och lämning sker kl: 10</TidInformation>
-        <StyledButton onClick={() => CheckDate()}>Se om bilen är ledig</StyledButton>
-        {!checkDate ? <TidInformation>På det datumet är bilen inte tillgänglig</TidInformation> :
-          <TidInformation>Bilen är ledig för bokning!</TidInformation>}
+        <StyledTitle>
+          {car.brand} {car.model}
+        </StyledTitle>
+        <StyledInfoCar>
+          Utforska en {car.brand} {car.model} med {car.seats} säten. Denna bil tillhör kategorin
+          "{car.carCategory.categoryName}" och finns tillgänglig i {car.city.cityName}.&nbsp;<b>
+            {car.carCategory.description}.</b>
+        </StyledInfoCar>
+        {user ? (
+          <CustomerInformation>
+            <CustomerInfo>
+              <StyledInfo>Namn</StyledInfo>
+              <UserInfo>{user.name}</UserInfo>
+            </CustomerInfo>
+            <CustomerInfo>
+              <StyledInfo>Efternamn</StyledInfo>
+              <UserInfo>{user.lastName}</UserInfo>
+            </CustomerInfo>
+            <CustomerInfo>
+              <StyledInfo>Epost adress</StyledInfo>
+              <UserInfo>{user.email}</UserInfo>
+            </CustomerInfo>
+            <TidInformation>Bilen ska hämtas kl. 10:00</TidInformation>
+            <CustomerInfo>
+              <StyledInfo>Hämtningsdatum:</StyledInfo>
+              <UserInfo>{startDate}</UserInfo>
+            </CustomerInfo>
+            <CustomerInfo>
+              <StyledInfo>Hämtnings stad:</StyledInfo>
+              <UserInfo>{car.city.cityName}</UserInfo>
+            </CustomerInfo>
+            <CustomerInfo>
+              <StyledInfo>Adress:</StyledInfo>
+              <UserInfo>{car.city.carsAddress}</UserInfo>
+            </CustomerInfo>
+            <TidInformation>Bilen ska lämnas tillbaka senast kl. 9:00</TidInformation>
+            <CustomerInfo>
+              <StyledInfo>Återlämningsdatum:</StyledInfo>
+              <UserInfo>{endDate}</UserInfo>
+            </CustomerInfo>
+            <CustomerInfo>
+              <StyledInfo>Återlämning stad:</StyledInfo>
+              <StyledSelect
+                onChange={(e) => {
+                  const selectedCity = cities.find((city) => city.cityName === e.target.value);
+                  if (selectedCity) {
+                    setCarsAddress(selectedCity.carsAddress);
+                  } else {
+                    setCarsAddress(null);
+                  }
+                }}>
+                <option value="">Välj stad</option>
+                {cities.map((city) => (
+                  <option key={city.id} value={city.cityName}>
+                    {city.cityName}
+                  </option>
+                ))}
+              </StyledSelect>
+            </CustomerInfo>
+            {carsAddress && (<CustomerInfo>
+              <StyledInfo>Adress:</StyledInfo>
+              <UserInfo>{carsAddress}</UserInfo>
+            </CustomerInfo>)
+            }
+            <CustomerInfo>
+              <StyledInfo>Total pris:</StyledInfo>
+              <UserInfo>{rentalDays}(Antal dagar) × {carPrice} = {totalPrice} kr</UserInfo>
+            </CustomerInfo>
+            <TidInformation>Val av betalningsmetod</TidInformation>
+            <CustomerInfo>
+              <StyledInfo>Betalningsmetod:</StyledInfo>
+              <StyledSelect
+                onChange={(e) => {
+                  const selectedPaymen = paymentsOptions.find((payment) => payment.option === e.target.value);
+                  if (selectedPaymen) {
+                    setPayment(selectedPaymen.option);
+                  } else {
+                    setPayment(null);
+                  }
+                }}>
+                <option value="">Välj betalningsmetod</option>
+                {paymentsOptions.map((payment) => (
+                  <option key={payment.id} value={payment.option}>
+                    {payment.option}
+                  </option>
+                ))}
+              </StyledSelect>
+            </CustomerInfo>
+          </CustomerInformation>) : (
+          <LoginCard>
+            {!user && (
+              <StyledLoginAlarm>
+                För att kunna boka bilen behöver du <br /><b>Logga in</b>
+              </StyledLoginAlarm>
+            )}
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <Form>
+              <label htmlFor="username">Användarnamn</label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Användarnamn"
+              />
+              <label htmlFor="password">Lösenord</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Lösenord"
+              />
+              <button onClick={handleLogin}>Logga in</button>
+            </Form>
+          </LoginCard>
+        )}
+        <StyledCheckbox>
+          <input type="checkbox" />
+          <label>Jag är minst 21 år gammal</label>
+        </StyledCheckbox>
+        <StyledCheckbox>
+          <input type="checkbox" />
+          <label>Jag har giltigt svenskt körkort</label>
+        </StyledCheckbox>
+        <StyledButton>Boka bilen</StyledButton>
       </StyledDetails>
     </StyledCarInfoContainer>
+
   );
 }
+const StyledCheckbox= styled.div`
+display: flex;
+font-weight: 500;
+margin-bottom: 1rem;
+`;
+const StyledSelect = styled.select`
+  padding: 0.8rem;
+  font-size: 0.8rem;
+  width: 200px;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  background: white;
+  &:hover {
+    border-color: #2a5298;
+  }
+`;
 
+const StyledInfoCar = styled.p`
+font-size: 17px;
+font-weight: 500;
+color: white;
+line-height: 2;
+background: #2a5298;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 350px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.121);
+`;
+
+const LoginCard = styled.div`
+    
+`;
+const CustomerInfo = styled.div`
+display: flex;
+padding-bottom: 1rem;
+justify-content: space-between;
+`;
+
+const Form = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    input {
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    button {
+        padding: 0.8rem;
+        background: #1e3c72;
+        color: white;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s;
+
+        &:hover {
+            background: #2a5298;
+        }
+    }
+`;
+
+const ErrorMessage = styled.h2`
+    color: red;
+    text-align: center;
+    margin-bottom: 1rem;
+`;
+
+
+const CustomerInformation = styled.div`
+padding-bottom: 1rem;
+
+`;
+const StyledLoginAlarm = styled.h2`
+text-align: center;
+background: #f60404;
+  border-radius: 10px;
+  color: white;
+  padding: 2rem;
+
+`;
 const TidInformation = styled.p`
-  font-size: 22px;
+  font-size: 20px;
+  font-weight: 600;
 `;
 
 const StyledCarInfoContainer = styled.div`
@@ -102,18 +294,25 @@ const StyledDetails = styled.div`
 `;
 
 const StyledTitle = styled.h1`
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #1e3c72;
   margin-bottom: 1.5rem;
 `;
 
-const StyledInfo = styled.p`
-  font-size: 1.2rem;
+const StyledInfo = styled.label`
+  font-size: 1rem;
+  font-weight: 500;
   text-align: left;
-  margin: 0.3 rem 0;
-  color: #333;
-  margin-bottom: 1.5rem;
+  color: #333333;
+  margin-top: 0.5rem;
+`;
+const UserInfo = styled.label`
+color: #2a5298;
+font-weight: 600;
+font-size: 1rem;
+margin-top: 0.5rem;
+
 `;
 
 const StyledMessage = styled.p`
@@ -121,28 +320,6 @@ const StyledMessage = styled.p`
   color: red;
   text-align: center;
   margin-top: 5rem;
-`;
-
-const StyledLabel = styled.label`
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
-  display: block;
-`;
-
-const StyledDatePicker = styled(DatePicker)`
-  padding: 0.8rem;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  &:focus {
-    border-color: #2a5298;
-  }
 `;
 
 const StyledButton = styled.button`

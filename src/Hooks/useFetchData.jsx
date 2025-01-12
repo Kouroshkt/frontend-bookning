@@ -4,6 +4,11 @@ export function useFetchData() {
     const [allCars, setCars] = useState([]);
     const [cities, setCities] = useState([]);
     const [categories , setCategories] = useState([]);
+    const paymentsOptions=[
+        {"id":1,"option":"Betala vid avlämning"},
+        {"id":2,"option":"Betala med kort"},
+        {"id":3,"option":"Betala med Klarna"}
+    ]
     async function fetchData() {
         try {
             const carsData = await fetchAllCar();
@@ -20,5 +25,5 @@ export function useFetchData() {
     useEffect(() => {
         fetchData();
     }, []);
-    return {allCars , cities ,categories};
+    return {allCars , cities ,categories,paymentsOptions};
 }

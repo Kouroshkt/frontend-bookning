@@ -13,13 +13,16 @@ export default function Home() {
   const [cars, setCars] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [rentalDays, setRentalDays] = useState(0);
+  const [startDateToApi, setStartDateToApi] = useState(null);
+  const [endDateToApi, setEndDateToApi] = useState(null);
   const today = new Date();
   const baseUrl = "http://localhost:8080";
 
   const formatDate = (date) => {
     if (!(date instanceof Date) || isNaN(date)) {
       console.warn("Invalid date provided:", date);
-      return ""; // Returnera en tom sträng för ogiltiga datum
+      return "";
     }
     return new Intl.DateTimeFormat("sv-SE", {
       year: "numeric",
@@ -41,6 +44,7 @@ export default function Home() {
       }
       fetchCategoriesByCityId();
     }
+
   }, [cityId]);
 
   const ShowCar = async () => {
@@ -52,6 +56,8 @@ export default function Home() {
     try {
       const formattedStartDate = formatDate(new Date(startDate));
       const formattedEndDate = formatDate(new Date(endDate));
+      setStartDateToApi(formattedStartDate);
+      setEndDateToApi(formattedEndDate);
       const response = await fetch(`${baseUrl}/car/getcarbyDate?cityId=${cityId}
         &carCategoryId=${categoryId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
       const data = await response.json();
@@ -121,16 +127,25 @@ export default function Home() {
           dateFormat="yyyy-MM-dd"
           placeholderText="Välj datum"
           minDate={today}
-          />
+        />
         <StyledLabel>Lämnas: </StyledLabel>
         <StyledDatePicker
           selected={endDate}
-          onChange={(date) => setEndDate(date)}
+          onChange={(date) => {
+            setEndDate(date);
+            if (startDate && date) {
+              const start = new Date(startDate);
+              const end = new Date(date);
+              const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); 
+              setRentalDays(rentalDays);
+            }
+          }}
           dateFormat="yyyy-MM-dd"
           placeholderText="Välj datum"
-          minDate={startDate}
-          />
-          </StyledForm>
+          minDate={startDate ? new Date(startDate).setDate(new Date(startDate).getDate() + 1) : null}
+        />
+
+      </StyledForm>
       <StyledForm>
         <StyledButton onClick={() => ShowCar()}>Sök</StyledButton>
       </StyledForm>
@@ -139,7 +154,7 @@ export default function Home() {
         {cars.length > 0 && (
           cars.map((car) => (
             <StyledCarItem key={car.id}>
-              <CarLink to={`/carinfo/${car.id}`}>
+              <CarLink to={`/carinfo/${car.id}/${startDateToApi}/${endDateToApi}/${rentalDays}`}>
                 <TitleCar>{car.brand} {car.model}</TitleCar>
                 <DescriptionCar>
                   {car.color} ({car.seats} säten)
@@ -148,6 +163,9 @@ export default function Home() {
                   {car.carCategory.categoryName}
                 </DescriptionCar>
                 <CityCar>{car.city.cityName}</CityCar>
+                <DescriptionCar>
+                  {car.price}kr
+                </DescriptionCar>
                 <img src={car.image} alt="Car image" />
               </CarLink>
             </StyledCarItem>

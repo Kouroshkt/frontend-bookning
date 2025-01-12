@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export default function Signin() {
@@ -28,9 +27,9 @@ export default function Signin() {
     return (
         <>
             <LoginContainer>
-                {error && <ErrorMessage>{error}</ErrorMessage>}
                 <LoginCard>
-                    <h1>Logga in</h1>
+                    <TitleLogin>Logga in</TitleLogin>
+                    {error && <ErrorMessage>{error}</ErrorMessage>}
                     <Form>
                         <label htmlFor="username">Användarnamn</label>
                         <input
@@ -50,15 +49,15 @@ export default function Signin() {
                         />
                         <button onClick={handleLogin}>Logga in</button>
                     </Form>
-                    <Separator>Eller</Separator>
-                    <LinkButton to="/createaccount">Skapa konto</LinkButton>
                 </LoginCard>
             </LoginContainer>
         </>
     );
 }
 
-// Styled-components
+const TitleLogin = styled.h1`
+text-align: center;
+`;
 const LoginContainer = styled.div`
     display: flex;
     justify-content: center;
@@ -72,7 +71,7 @@ const LoginCard = styled.div`
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    text-align: left;
     width: 100%;
     max-width: 400px;
 `;
@@ -105,27 +104,9 @@ const Form = styled.div`
     }
 `;
 
-const Separator = styled.p`
-    margin: 1rem 0;
-    color: #666;
-`;
-
-const LinkButton = styled(Link)`
-    padding: 0.8rem;
-    background: #2a5298;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
-    display: inline-block;
-
-    &:hover {
-        background: #1e3c72;
-    }
-`;
-
-const ErrorMessage = styled.h3`
+const ErrorMessage = styled.h2`
     color: red;
+    text-align: center;
     margin-bottom: 1rem;
 `;
 
