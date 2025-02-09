@@ -6,7 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export function CarInfo() {
-  const { carId, startDate, endDate , rentalDays} = useParams();
+  const { carId, startDate, endDate, rentalDays } = useParams();
   const { allCars } = useFetchData();
   const user = JSON.parse(localStorage.getItem("user"));
   const [username, setUsername] = useState("");
@@ -21,8 +21,8 @@ export function CarInfo() {
   if (!car) {
     return <StyledMessage>Bilen kunde inte hittas</StyledMessage>;
   }
-  let carPrice= parseFloat(car.price);
-  let totalPrice=rentalDays*carPrice;
+  let carPrice = parseFloat(car.price);
+  let totalPrice = rentalDays * carPrice;
   const handleLogin = async () => {
     if (!username || !password) {
       return setError("Glöm inte att fylla i användarnamn och lösenord.");
@@ -43,11 +43,11 @@ export function CarInfo() {
 
   return (
     <StyledCarInfoContainer>
-      <StyledCarImage
-        src={`http://localhost:3000/${car.image}`}
-        alt={`${car.brand} ${car.model}`}
-      />
       <StyledDetails>
+        <StyledCarImage
+          src={`http://localhost:3000/${car.image}`}
+          alt={`${car.brand} ${car.model}`}
+        />
         <StyledTitle>
           {car.brand} {car.model}
         </StyledTitle>
@@ -58,6 +58,7 @@ export function CarInfo() {
         </StyledInfoCar>
         {user ? (
           <CustomerInformation>
+              <UserTitle>Din profilinformation</UserTitle>
             <CustomerInfo>
               <StyledInfo>Namn</StyledInfo>
               <UserInfo>{user.name}</UserInfo>
@@ -136,6 +137,15 @@ export function CarInfo() {
                 ))}
               </StyledSelect>
             </CustomerInfo>
+            <StyledCheckbox>
+              <input type="checkbox" />
+              <label>Jag är minst 21 år gammal</label>
+            </StyledCheckbox>
+            <StyledCheckbox>
+              <input type="checkbox" />
+              <label>Jag har giltigt svenskt körkort</label>
+            </StyledCheckbox>
+            <StyledButton>Boka bilen</StyledButton>
           </CustomerInformation>) : (
           <LoginCard>
             {!user && (
@@ -165,21 +175,13 @@ export function CarInfo() {
             </Form>
           </LoginCard>
         )}
-        <StyledCheckbox>
-          <input type="checkbox" />
-          <label>Jag är minst 21 år gammal</label>
-        </StyledCheckbox>
-        <StyledCheckbox>
-          <input type="checkbox" />
-          <label>Jag har giltigt svenskt körkort</label>
-        </StyledCheckbox>
-        <StyledButton>Boka bilen</StyledButton>
+
       </StyledDetails>
     </StyledCarInfoContainer>
 
   );
 }
-const StyledCheckbox= styled.div`
+const StyledCheckbox = styled.div`
 display: flex;
 font-weight: 500;
 margin-bottom: 1rem;
@@ -204,7 +206,7 @@ line-height: 2;
 background: #2a5298;
   border-radius: 10px;
   padding: 2rem;
-  max-width: 350px;
+  max-width: 450px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.121);
 `;
 
@@ -268,7 +270,9 @@ background: #f60404;
 const TidInformation = styled.p`
   font-size: 20px;
   font-weight: 600;
+  color: #28a745;
 `;
+const UserTitle = TidInformation;
 
 const StyledCarInfoContainer = styled.div`
   display: flex;
@@ -280,7 +284,7 @@ const StyledCarInfoContainer = styled.div`
 `;
 
 const StyledCarImage = styled.img`
-  width: 550px;
+  width: 450px;
   height: auto;
 `;
 
@@ -289,7 +293,7 @@ const StyledDetails = styled.div`
   border-radius: 10px;
   padding: 2rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
