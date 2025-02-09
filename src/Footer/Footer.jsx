@@ -1,3 +1,11 @@
+import styled from "styled-components"
+
 export default function Footer (){
-    return(<h1>FOOTER</h1>)
+    return(<FooterSection>
+
+    </FooterSection>)
 }
+const FooterSection = styled.div`
+background-color: #04162C;
+height: 200px;
+`
