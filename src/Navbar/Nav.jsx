@@ -5,7 +5,7 @@ export default function Navigation() {
   const user = JSON.parse(localStorage.getItem("user"));
   return (
     <StyledNavbar>
-      <Logo to="/">MyCarApp</Logo>
+      <Logo to="/"><LogoImg src="logo.jpeg" alt="" /></Logo>
       <Menu>
         {!user ? (<StyledLink to="/createaccount">Skapa konto</StyledLink>) 
         : (<StyledHello   as="a" >Hej {user.name}</StyledHello>)}
@@ -30,11 +30,14 @@ const StyledNavbar = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, #1e3c72, #2a5298); 
+  //background: #030438; 
+  background-color:  #04162C;
   padding: 1rem 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
-
+const LogoImg= styled.img`
+width: 120px;
+`
 const Logo = styled(Link)`
   font-size: 1.8rem;
   font-weight: bold;
