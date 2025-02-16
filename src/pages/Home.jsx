@@ -147,7 +147,7 @@ export default function Home() {
 
       </StyledForm>
       <StyledForm>
-        <StyledButton onClick={() => ShowCar()}>Sök</StyledButton>
+        <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
       </StyledForm>
 
       <StyledCarList>
