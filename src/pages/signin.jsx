@@ -94,7 +94,7 @@ const LoginContainer = styled.div`
     justify-content: center;
     align-items: center;
     height: calc(100vh - 80px);
-    background-color: #f0f2f5;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
 `;
 
 const LoginCard = styled.div`
