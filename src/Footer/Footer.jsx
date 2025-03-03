@@ -1,9 +1,40 @@
 import styled from "styled-components"
 import { TfiEmail } from "react-icons/tfi";
 import { MdContactPhone } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Footer() {
+    const [responseOfServer, setResponseOfServer] = useState();
+    const [email, setEmail] = useState();
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    async function SendEmailDefault() {
+        if (!email) {
+            setResponseOfServer("Skriv in ditt Epost.");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            setResponseOfServer("Skriv in en giltig Epostadress.");
+            return;
+        }
+        try {
+            const response = await fetch("http://localhost:8080/email/sendnews", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({ email }),
+            });
+
+            const text = await response.text();
+            setResponseOfServer(text);
+        } catch (error) {
+            console.error("Error sending email:", error);
+            setResponseOfServer(error.response?.data || "Server kan inte skicka Epost.");
+        }
+    }
     return (
         <FooterSection>
             <ContactInfo>
@@ -45,12 +76,14 @@ export default function Footer() {
                         Prenumerera för att få nyheter<br></br> och speciella erbjudanden
                     </Title>
                     <EmailSending>
-                        <InputEmail type="email" placeholder="E-postadress">
+                        <InputEmail type="email" placeholder="E-postadress"
+                            onChange={(e) => setEmail(e.target.value)}>
                         </InputEmail>
-                        <ButtonEmail>
+                        <ButtonEmail onClick={() => SendEmailDefault()}>
                             SKICKA
                         </ButtonEmail>
                     </EmailSending>
+                    {responseOfServer && <h4>{responseOfServer}</h4>}
                 </News>
             </BottomSection>
         </FooterSection>)
