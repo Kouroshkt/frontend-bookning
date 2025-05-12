@@ -227,7 +227,7 @@ export function CarInfo() {
   );
 }
 
-// Styled Components
+
 const StyledCarInfoContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -235,6 +235,8 @@ const StyledCarInfoContainer = styled.div`
   justify-content: space-around;
   background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
   text-align: center;
+  padding-top: 50px;
+  padding-bottom: 50px;
 `;
 
 const StyledDetails = styled.div`
