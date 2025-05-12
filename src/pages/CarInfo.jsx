@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useFetchData } from "../Hooks/useFetchData";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
@@ -7,22 +7,27 @@ import axios from "axios";
 
 export function CarInfo() {
   const { carId, startDate, endDate, rentalDays } = useParams();
-  const { allCars } = useFetchData();
+  const { allCars, cities, paymentsOptions } = useFetchData();
   const user = JSON.parse(localStorage.getItem("user"));
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [carsAddress, setCarsAddress] = useState("");
   const [payment, setPayment] = useState("");
   const [error, setError] = useState("");
-  const { cities, paymentsOptions } = useFetchData();
-
+  const [isOver21, setIsOver21] = useState(false);
+  const [hasLicense, setHasLicense] = useState(false);
 
   const car = allCars.find((car) => car.id === parseInt(carId, 10));
+  const navigate = useNavigate();
+
   if (!car) {
     return <StyledMessage>Bilen kunde inte hittas</StyledMessage>;
   }
+
   let carPrice = parseFloat(car.price);
   let totalPrice = rentalDays * carPrice;
+
   const handleLogin = async () => {
     if (!username || !password) {
       return setError("Glöm inte att fylla i användarnamn och lösenord.");
@@ -34,11 +39,35 @@ export function CarInfo() {
       });
       localStorage.setItem("user", JSON.stringify(response.data));
       window.location.reload();
-
     } catch (err) {
       setError("Inloggning misslyckades. Kontrollera dina uppgifter.");
       console.error(err);
     }
+  };
+
+  const handleBooking = () => {
+    if (!carsAddress || !payment) {
+      setError("Du måste välja betalningsmetod och återlämningsadress.");
+      return;
+    }
+
+    if (!isOver21 || !hasLicense) {
+      setError("Du måste bekräfta att du är minst 21 år gammal och har giltigt svenskt körkort.");
+      return;
+    }
+
+    const bookingData = {
+      user,
+      car,
+      startDate,
+      endDate,
+      rentalDays,
+      payment,
+      carsAddress,
+      totalPrice,
+    };
+
+    navigate("/confirmation", { state: bookingData });
   };
 
   return (
@@ -53,12 +82,14 @@ export function CarInfo() {
         </StyledTitle>
         <StyledInfoCar>
           Utforska en {car.brand} {car.model} med {car.seats} säten. Denna bil tillhör kategorin
-          "{car.carCategory.categoryName}" och finns tillgänglig i {car.city.cityName}.&nbsp;<b>
-            {car.carCategory.description}.</b>
+          "{car.carCategory.categoryName}" och finns tillgänglig i {car.city.cityName}.&nbsp;
+          <b>{car.carCategory.description}.</b>
         </StyledInfoCar>
+
         {user ? (
           <CustomerInformation>
-              <UserTitle>Din profilinformation</UserTitle>
+            <UserTitle>Din profilinformation</UserTitle>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <CustomerInfo>
               <StyledInfo>Namn</StyledInfo>
               <UserInfo>{user.name}</UserInfo>
@@ -93,13 +124,12 @@ export function CarInfo() {
               <StyledInfo>Återlämning stad:</StyledInfo>
               <StyledSelect
                 onChange={(e) => {
-                  const selectedCity = cities.find((city) => city.cityName === e.target.value);
-                  if (selectedCity) {
-                    setCarsAddress(selectedCity.carsAddress);
-                  } else {
-                    setCarsAddress(null);
-                  }
-                }}>
+                  const selectedCity = cities.find(
+                    (city) => city.cityName === e.target.value
+                  );
+                  setCarsAddress(selectedCity ? selectedCity.carsAddress : null);
+                }}
+              >
                 <option value="">Välj stad</option>
                 {cities.map((city) => (
                   <option key={city.id} value={city.cityName}>
@@ -108,27 +138,32 @@ export function CarInfo() {
                 ))}
               </StyledSelect>
             </CustomerInfo>
-            {carsAddress && (<CustomerInfo>
-              <StyledInfo>Adress:</StyledInfo>
-              <UserInfo>{carsAddress}</UserInfo>
-            </CustomerInfo>)
-            }
+
+            {carsAddress && (
+              <CustomerInfo>
+                <StyledInfo>Adress:</StyledInfo>
+                <UserInfo>{carsAddress}</UserInfo>
+              </CustomerInfo>
+            )}
+
             <CustomerInfo>
               <StyledInfo>Total pris:</StyledInfo>
-              <UserInfo>{rentalDays}(Antal dagar) × {carPrice} = {totalPrice} kr</UserInfo>
+              <UserInfo>
+                {rentalDays}(Antal dagar) × {carPrice} = {totalPrice} kr
+              </UserInfo>
             </CustomerInfo>
+
             <TidInformation>Val av betalningsmetod</TidInformation>
             <CustomerInfo>
               <StyledInfo>Betalningsmetod:</StyledInfo>
               <StyledSelect
                 onChange={(e) => {
-                  const selectedPaymen = paymentsOptions.find((payment) => payment.option === e.target.value);
-                  if (selectedPaymen) {
-                    setPayment(selectedPaymen.option);
-                  } else {
-                    setPayment(null);
-                  }
-                }}>
+                  const selectedPayment = paymentsOptions.find(
+                    (p) => p.option === e.target.value
+                  );
+                  setPayment(selectedPayment ? selectedPayment.option : null);
+                }}
+              >
                 <option value="">Välj betalningsmetod</option>
                 {paymentsOptions.map((payment) => (
                   <option key={payment.id} value={payment.option}>
@@ -137,20 +172,32 @@ export function CarInfo() {
                 ))}
               </StyledSelect>
             </CustomerInfo>
+
             <StyledCheckbox>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={isOver21}
+                onChange={(e) => setIsOver21(e.target.checked)}
+              />
               <label>Jag är minst 21 år gammal</label>
             </StyledCheckbox>
             <StyledCheckbox>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={hasLicense}
+                onChange={(e) => setHasLicense(e.target.checked)}
+              />
               <label>Jag har giltigt svenskt körkort</label>
             </StyledCheckbox>
-            <StyledButton>Boka bilen</StyledButton>
-          </CustomerInformation>) : (
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <StyledButton onClick={handleBooking}>Boka bilen</StyledButton>
+          </CustomerInformation>
+        ) : (
           <LoginCard>
             {!user && (
               <StyledLoginAlarm>
-                För att kunna boka bilen behöver du <br /><b>Logga in</b>
+                För att kunna boka bilen behöver du <br />
+                <b>Logga in</b>
               </StyledLoginAlarm>
             )}
             {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -175,17 +222,88 @@ export function CarInfo() {
             </Form>
           </LoginCard>
         )}
-
       </StyledDetails>
     </StyledCarInfoContainer>
-
   );
 }
-const StyledCheckbox = styled.div`
-display: flex;
-font-weight: 500;
-margin-bottom: 1rem;
+
+// Styled Components
+const StyledCarInfoContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  text-align: center;
 `;
+
+const StyledDetails = styled.div`
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const StyledCarImage = styled.img`
+  width: 450px;
+  height: auto;
+`;
+
+const StyledTitle = styled.h1`
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1e3c72;
+  margin-bottom: 1.5rem;
+`;
+
+const StyledInfoCar = styled.p`
+  font-size: 17px;
+  font-weight: 500;
+  color: white;
+  line-height: 2;
+  background: #2a5298;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 450px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.121);
+`;
+
+const CustomerInformation = styled.div`
+  padding-bottom: 1rem;
+`;
+
+const UserTitle = styled.p`
+  font-size: 20px;
+  font-weight: 600;
+  color: #28a745;
+`;
+
+const CustomerInfo = styled.div`
+  display: flex;
+  padding-bottom: 1rem;
+  justify-content: space-between;
+`;
+
+const StyledInfo = styled.label`
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333333;
+`;
+
+const UserInfo = styled.label`
+  color: #2a5298;
+  font-weight: 600;
+  font-size: 1rem;
+`;
+
+const TidInformation = styled.p`
+  font-size: 20px;
+  font-weight: 600;
+  color: #28a745;
+`;
+
 const StyledSelect = styled.select`
   padding: 0.8rem;
   font-size: 0.8rem;
@@ -198,132 +316,11 @@ const StyledSelect = styled.select`
   }
 `;
 
-const StyledInfoCar = styled.p`
-font-size: 17px;
-font-weight: 500;
-color: white;
-line-height: 2;
-background: #2a5298;
-  border-radius: 10px;
-  padding: 2rem;
-  max-width: 450px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.121);
-`;
-
-const LoginCard = styled.div`
-    
-`;
-const CustomerInfo = styled.div`
-display: flex;
-padding-bottom: 1rem;
-justify-content: space-between;
-`;
-
-const Form = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    input {
-        padding: 0.8rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-    }
-
-    button {
-        padding: 0.8rem;
-        background: #1e3c72;
-        color: white;
-        font-size: 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background 0.3s;
-
-        &:hover {
-            background: #2a5298;
-        }
-    }
-`;
-
-const ErrorMessage = styled.h2`
-    color: red;
-    text-align: center;
-    margin-bottom: 1rem;
-`;
-
-
-const CustomerInformation = styled.div`
-padding-bottom: 1rem;
-
-`;
-const StyledLoginAlarm = styled.h2`
-text-align: center;
-background: #f60404;
-  border-radius: 10px;
-  color: white;
-  padding: 2rem;
-
-`;
-const TidInformation = styled.p`
-  font-size: 20px;
-  font-weight: 600;
-  color: #28a745;
-`;
-const UserTitle = TidInformation;
-
-const StyledCarInfoContainer = styled.div`
+const StyledCheckbox = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
-  text-align: center;
-`;
-
-const StyledCarImage = styled.img`
-  width: 450px;
-  height: auto;
-`;
-
-const StyledDetails = styled.div`
-  background: white;
-  border-radius: 10px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
-
-const StyledTitle = styled.h1`
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1e3c72;
-  margin-bottom: 1.5rem;
-`;
-
-const StyledInfo = styled.label`
-  font-size: 1rem;
   font-weight: 500;
-  text-align: left;
-  color: #333333;
-  margin-top: 0.5rem;
-`;
-const UserInfo = styled.label`
-color: #2a5298;
-font-weight: 600;
-font-size: 1rem;
-margin-top: 0.5rem;
-
-`;
-
-const StyledMessage = styled.p`
-  font-size: 1.5rem;
-  color: red;
-  text-align: center;
-  margin-top: 5rem;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
 `;
 
 const StyledButton = styled.button`
@@ -339,4 +336,54 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #1a3c6c;
   }
+`;
+
+const StyledLoginAlarm = styled.h2`
+  text-align: center;
+  background: #f60404;
+  border-radius: 10px;
+  color: white;
+  padding: 2rem;
+`;
+
+const LoginCard = styled.div``;
+
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  input {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  button {
+    padding: 0.8rem;
+    background: #1e3c72;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    &:hover {
+      background: #2a5298;
+    }
+  }
+`;
+
+const ErrorMessage = styled.h2`
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
+`;
+
+const StyledMessage = styled.p`
+  font-size: 1.5rem;
+  color: red;
+  text-align: center;
+  margin-top: 5rem;
 `;

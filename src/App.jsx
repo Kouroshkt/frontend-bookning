@@ -4,12 +4,14 @@ import Signin from "./pages/signin";
 import RootLayout from "./Rootlayout/RootLayout";
 import { CarInfo } from "./pages/CarInfo";
 import CreateAccount from "./pages/CreateAccount";
+import {ConfirmationPage} from "./pages/ConfirmationPage";
 
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
         <Route index element={<Home />} />
+        <Route path="confirmation" element={<ConfirmationPage />} />
         <Route path="signin" element={<Signin />} />
         <Route path="carinfo/:carId/:startDate/:endDate/:rentalDays" element={<CarInfo />} />
         <Route path="createaccount" element={<CreateAccount />} />
