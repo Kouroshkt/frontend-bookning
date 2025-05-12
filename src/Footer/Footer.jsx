@@ -1,11 +1,12 @@
-import styled from "styled-components"
+import styled from "styled-components";
 import { TfiEmail } from "react-icons/tfi";
 import { MdContactPhone } from "react-icons/md";
 import { useState } from "react";
 
 export default function Footer() {
     const [responseOfServer, setResponseOfServer] = useState();
-    const [email, setEmail] = useState();
+    const [email, setEmail] = useState('');
+
     function isValidEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
@@ -28,13 +29,18 @@ export default function Footer() {
                 body: new URLSearchParams({ email }),
             });
 
-            const text = await response.text();
-            setResponseOfServer(text);
+            if (response.ok) {
+                setResponseOfServer("E-post skickad!");
+                setEmail(''); 
+            } else {
+                setResponseOfServer("Något gick fel...");
+            }
         } catch (error) {
             console.error("Error sending email:", error);
-            setResponseOfServer(error.response?.data || "Server kan inte skicka Epost.");
+            setResponseOfServer("Server kan inte skicka Epost.");
         }
     }
+
     return (
         <FooterSection>
             <ContactInfo>
@@ -56,7 +62,7 @@ export default function Footer() {
                     <TitleInformation>
                         INFORMATION
                     </TitleInformation>
-                    <LinkToConditions href="villkor.pdf" target="_blank">
+                    <LinkToConditions href="/villkor.pdf" target="_blank">
                         Villkor
                     </LinkToConditions>
                 </Information>
@@ -77,16 +83,18 @@ export default function Footer() {
                     </Title>
                     <EmailSending>
                         <InputEmail type="email" placeholder="E-postadress"
-                            onChange={(e) => setEmail(e.target.value)}>
-                        </InputEmail>
-                        <ButtonEmail onClick={() => SendEmailDefault()}>
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <ButtonEmail onClick={SendEmailDefault}>
                             SKICKA
                         </ButtonEmail>
                     </EmailSending>
                     {responseOfServer && <h4>{responseOfServer}</h4>}
                 </News>
             </BottomSection>
-        </FooterSection>)
+        </FooterSection>
+    );
 }
 const ButtonEmail = styled.button`
 height: 33px;
