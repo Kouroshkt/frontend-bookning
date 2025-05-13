@@ -58,47 +58,49 @@ Ditt Biluthyrningsteam
         }
     };
 
+    
 
-    return (
-        <Container>
-            <Title>Bokningsbekräftelse</Title>
-            <InfoTable>
-                <Row>
-                    <Label>Namn:</Label>
-                    <Value>{user.name} {user.lastName}</Value>
-                </Row>
-                <Row>
-                    <Label>E-post:</Label>
-                    <Value>{user.email}</Value>
-                </Row>
-                <Row>
-                    <Label>Bil:</Label>
-                    <Value>{car.brand} {car.model}</Value>
-                </Row>
-                <Row>
-                    <Label>Datum:</Label>
-                    <Value>{startDate} till {endDate}</Value>
-                </Row>
-                <Row>
-                    <Label>Återlämningsadress:</Label>
-                    <Value>{carsAddress}</Value>
-                </Row>
-                <Row>
-                    <Label>Betalningsmetod:</Label>
-                    <Value>{payment}</Value>
-                </Row>
-                <Row>
-                    <Label>Totalpris:</Label>
-                    <Value>{totalPrice} kr</Value>
-                </Row>
-            </InfoTable>
 
-            <ButtonContainer>
-                <Button onClick={handleDownloadPDF}>Spara som PDF</Button>
-                <Button onClick={handleSendEmail}>Skicka till e-post</Button>
-            </ButtonContainer>
-        </Container>
-    );
+return (
+    <Container>
+        <Title>Bokningsbekräftelse</Title>
+        <InfoTable>
+            <Row>
+                <Label>Namn:</Label>
+                <Value>{user.name} {user.lastName}</Value>
+            </Row>
+            <Row>
+                <Label>E-post:</Label>
+                <Value>{user.email}</Value>
+            </Row>
+            <Row>
+                <Label>Bil:</Label>
+                <Value>{car.brand} {car.model}</Value>
+            </Row>
+            <Row>
+                <Label>Datum:</Label>
+                <Value>{startDate} till {endDate}</Value>
+            </Row>
+            <Row>
+                <Label>Återlämningsadress:</Label>
+                <Value>{carsAddress}</Value>
+            </Row>
+            <Row>
+                <Label>Betalningsmetod:</Label>
+                <Value>{payment}</Value>
+            </Row>
+            <Row>
+                <Label>Totalpris:</Label>
+                <Value>{totalPrice} kr</Value>
+            </Row>
+        </InfoTable>
+
+        <ButtonContainer>
+            <Button onClick={handleDownloadPDF}>Spara som PDF</Button>
+            <Button onClick={handleSendEmail}>Skicka till e-post</Button>
+        </ButtonContainer>
+    </Container>
+);
 }
 
 
