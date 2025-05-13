@@ -58,8 +58,7 @@ Ditt Biluthyrningsteam
         }
     };
 
-    
-
+   
 
 return (
     <Container>
@@ -101,6 +100,7 @@ return (
         </ButtonContainer>
     </Container>
 );
+
 }
 
 

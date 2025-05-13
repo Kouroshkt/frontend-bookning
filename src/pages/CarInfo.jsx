@@ -45,6 +45,7 @@ export function CarInfo() {
     }
   };
 
+
   const handleBooking = async () => {
   if (!carsAddress || !payment) {
     setError("Du måste välja betalningsmetod och återlämningsadress.");
