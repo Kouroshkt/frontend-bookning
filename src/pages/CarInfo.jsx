@@ -45,30 +45,52 @@ export function CarInfo() {
     }
   };
 
-  const handleBooking = () => {
-    if (!carsAddress || !payment) {
-      setError("Du måste välja betalningsmetod och återlämningsadress.");
-      return;
+
+  const handleBooking = async () => {
+  if (!carsAddress || !payment) {
+    setError("Du måste välja betalningsmetod och återlämningsadress.");
+    return;
+  }
+
+  if (!isOver21 || !hasLicense) {
+    setError("Du måste bekräfta att du är minst 21 år gammal och har giltigt svenskt körkort.");
+    return;
+  }
+
+  const formattedStartDate = new Date(startDate).toISOString().split("T")[0];
+  const formattedEndDate = new Date(endDate).toISOString().split("T")[0];
+
+  try {
+    const response = await axios.get(`http://localhost:8080/carbookning/addcarbookning`, {
+      params: {
+        carId: car.id,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      },
+    });
+
+    if (response.status === 200) {
+      alert("Bilen har bokats!");
     }
+  } catch (err) {
+    alert("Misslyckades att boka bilen!");
+    console.error(err);
+    return;
+  }
 
-    if (!isOver21 || !hasLicense) {
-      setError("Du måste bekräfta att du är minst 21 år gammal och har giltigt svenskt körkort.");
-      return;
-    }
-
-    const bookingData = {
-      user,
-      car,
-      startDate,
-      endDate,
-      rentalDays,
-      payment,
-      carsAddress,
-      totalPrice,
-    };
-
-    navigate("/confirmation", { state: bookingData });
+  const bookingData = {
+    user,
+    car,
+    startDate,
+    endDate,
+    rentalDays,
+    payment,
+    carsAddress,
+    totalPrice,
   };
+
+  navigate("/confirmation", { state: bookingData });
+};
 
   return (
     <StyledCarInfoContainer>
