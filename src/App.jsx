@@ -6,6 +6,7 @@ import { CarInfo } from "./pages/CarInfo";
 import CreateAccount from "./pages/CreateAccount";
 import {ConfirmationPage} from "./pages/ConfirmationPage";
 import { About } from "./pages/About";
+import { Contact } from "./pages/Contact";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -14,6 +15,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="confirmation" element={<ConfirmationPage />} />
         <Route path="signin" element={<Signin />} />
+        <Route path="contact" element={<Contact/>} />
         <Route path="carinfo/:carId/:startDate/:endDate/:rentalDays" element={<CarInfo />} />
         <Route path="about" element={<About/>} />
         <Route path="createaccount" element={<CreateAccount />} />
