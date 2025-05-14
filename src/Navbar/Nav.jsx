@@ -7,6 +7,7 @@ export default function Navigation() {
     <StyledNavbar>
       <Logo to="/"><LogoImg src="logo.jpeg" alt="" /></Logo>
       <Menu>
+        <StyledLink to="/about">Om oss</StyledLink>
         {!user ? (<StyledLink to="/createaccount">Skapa konto</StyledLink>) 
         : (<StyledHello   as="a" >Hej {user.name}</StyledHello>)}
           {!user ? (
