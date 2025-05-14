@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useFetchData } from "../Hooks/useFetchData";
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
+import { CarPic } from "../Component/CarPic";
 
 
 export default function Home() {
@@ -75,12 +77,19 @@ export default function Home() {
         {categories.map((category) => (category.id < 6 &&
           <StyledCategoryItem>
             <StyledTitle>{category.categoryName}</StyledTitle>
-            <img src={category.categoryImage} />
+            <img src={category.categoryImage} alt=" "/>
             <p>{category.description}</p>
           </StyledCategoryItem>
         ))
         }
       </StyledCategories>
+      <StyledInfoBox>
+        <h5>Boka hyrbil online</h5>
+        <p><br></br><b> <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
+Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
+Trygg och erfaren leverantör<br></br><br></br></b></p>
+        <p>Hos oss kan du hyra bil i hela Sverige. Boka enkelt och välj bland ett stort utbud av hyrbilar, hos våra fantastiska biluthyrare på fler än 10 orter från norr till söder.
+Välj station nedan och se tillgängliga bilar att hyra i nästa steg.<br></br><br></br></p>
       <StyledForm>
         <StyledSelect
           onChange={(e) => {
@@ -92,7 +101,7 @@ export default function Home() {
               setCategoriesByCityId([]);
             }
           }}
-        >
+          >
           <option value="">Välj stad</option>
           {cities.map((city) => (
             <option key={city.id} value={city.cityName}>
@@ -112,7 +121,7 @@ export default function Home() {
               setCategoryId(null);
             }
           }}
-        >
+          >
           <option value="">Välj biltyp</option>
           {categoriesByCityId.map((category) => (
             <option key={category.id} value={category.categoryName}>
@@ -127,7 +136,7 @@ export default function Home() {
           dateFormat="yyyy-MM-dd"
           placeholderText="Välj datum"
           minDate={today}
-        />
+          />
         <StyledLabel>Lämnas: </StyledLabel>
         <StyledDatePicker
           selected={endDate}
@@ -143,12 +152,13 @@ export default function Home() {
           dateFormat="yyyy-MM-dd"
           placeholderText="Välj datum"
           minDate={startDate ? new Date(startDate).setDate(new Date(startDate).getDate() + 1) : null}
-        />
+          />
 
       </StyledForm>
       <StyledForm>
         <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
       </StyledForm>
+        </StyledInfoBox>
 
       <StyledCarList>
         {cars.length > 0 && (
@@ -172,6 +182,7 @@ export default function Home() {
           ))
         )}
       </StyledCarList>
+      <CarPic/>
     </StyledContainer>
   );
 }
@@ -181,7 +192,7 @@ const StyledLabel = styled.label`
   color: #333;
   display: block;
 `;
-const StyledTitle = styled.h2`
+const StyledTitle = styled.h1`
 color:#333;
 text-align: center;
 `;
@@ -303,6 +314,33 @@ img {
     object-fit: contain;
     border-radius: 5px;
     margin-top: 1rem;
+  }
+`;
+const StyledInfoBox = styled.div`
+  background-color: #ffffffd1;
+  padding: 2rem;
+  width: 70%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+
+  h5 {
+    font-size: 3rem;
+    color: #2a5298;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin: 0.5rem 0;
+  }
+
+  b {
+    color: #28a745;
   }
 `;
 
