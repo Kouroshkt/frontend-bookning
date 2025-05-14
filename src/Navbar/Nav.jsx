@@ -8,6 +8,7 @@ export default function Navigation() {
       <Logo to="/"><LogoImg src="logo.jpeg" alt="" /></Logo>
       <Menu>
         <StyledLink to="/about">Om oss</StyledLink>
+        <StyledLink to="/contact">Hitta oss</StyledLink>
         {!user ? (<StyledLink to="/createaccount">Skapa konto</StyledLink>) 
         : (<StyledHello   as="a" >Hej {user.name}</StyledHello>)}
           {!user ? (
