@@ -63,6 +63,7 @@ export function CarInfo() {
   try {
     const response = await axios.get(`http://localhost:8080/carbookning/addcarbookning`, {
       params: {
+        userId:user.id,
         carId: car.id,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
