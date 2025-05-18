@@ -77,7 +77,7 @@ export default function Home() {
         {categories.map((category) => (category.id < 6 &&
           <StyledCategoryItem>
             <StyledTitle>{category.categoryName}</StyledTitle>
-            <img src={category.categoryImage} alt=" "/>
+            <img src={category.categoryImage} alt=" " />
             <p>{category.description}</p>
           </StyledCategoryItem>
         ))
@@ -86,79 +86,79 @@ export default function Home() {
       <StyledInfoBox>
         <h5>Boka hyrbil online</h5>
         <p><br></br><b> <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
-Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
-Trygg och erfaren leverantör<br></br><br></br></b></p>
+          Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
+          Trygg och erfaren leverantör<br></br><br></br></b></p>
         <p>Hos oss kan du hyra bil i hela Sverige. Boka enkelt och välj bland ett stort utbud av hyrbilar, hos våra fantastiska biluthyrare på fler än 10 orter från norr till söder.
-Välj station nedan och se tillgängliga bilar att hyra i nästa steg.<br></br><br></br></p>
-      <StyledForm>
-        <StyledSelect
-          onChange={(e) => {
-            const selectedCity = cities.find((city) => city.cityName === e.target.value);
-            if (selectedCity) {
-              setCityId(selectedCity.id);
-            } else {
-              setCityId(null);
-              setCategoriesByCityId([]);
-            }
-          }}
+          Välj station nedan och se tillgängliga bilar att hyra i nästa steg.<br></br><br></br></p>
+        <StyledForm>
+          <StyledSelect
+            onChange={(e) => {
+              const selectedCity = cities.find((city) => city.cityName === e.target.value);
+              if (selectedCity) {
+                setCityId(selectedCity.id);
+              } else {
+                setCityId(null);
+                setCategoriesByCityId([]);
+              }
+            }}
           >
-          <option value="">Välj stad</option>
-          {cities.map((city) => (
-            <option key={city.id} value={city.cityName}>
-              {city.cityName}
-            </option>
-          ))}
-        </StyledSelect>
+            <option value="">Välj stad</option>
+            {cities.map((city) => (
+              <option key={city.id} value={city.cityName}>
+                {city.cityName}
+              </option>
+            ))}
+          </StyledSelect>
 
-        <StyledSelect
-          onChange={(e) => {
-            const selectedCategory = categoriesByCityId.find(
-              (category) => category.categoryName === e.target.value
-            );
-            if (selectedCategory) {
-              setCategoryId(selectedCategory.id);
-            } else {
-              setCategoryId(null);
-            }
-          }}
+          <StyledSelect
+            onChange={(e) => {
+              const selectedCategory = categoriesByCityId.find(
+                (category) => category.categoryName === e.target.value
+              );
+              if (selectedCategory) {
+                setCategoryId(selectedCategory.id);
+              } else {
+                setCategoryId(null);
+              }
+            }}
           >
-          <option value="">Välj biltyp</option>
-          {categoriesByCityId.map((category) => (
-            <option key={category.id} value={category.categoryName}>
-              {category.categoryName}
-            </option>
-          ))}
-        </StyledSelect>
-        <StyledLabel>Hämtas: </StyledLabel>
-        <StyledDatePicker
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          dateFormat="yyyy-MM-dd"
-          placeholderText="Välj datum"
-          minDate={today}
+            <option value="">Välj biltyp</option>
+            {categoriesByCityId.map((category) => (
+              <option key={category.id} value={category.categoryName}>
+                {category.categoryName}
+              </option>
+            ))}
+          </StyledSelect>
+          <StyledLabel>Hämtas: </StyledLabel>
+          <StyledDatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Välj datum"
+            minDate={today}
           />
-        <StyledLabel>Lämnas: </StyledLabel>
-        <StyledDatePicker
-          selected={endDate}
-          onChange={(date) => {
-            setEndDate(date);
-            if (startDate && date) {
-              const start = new Date(startDate);
-              const end = new Date(date);
-              const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); 
-              setRentalDays(rentalDays);
-            }
-          }}
-          dateFormat="yyyy-MM-dd"
-          placeholderText="Välj datum"
-          minDate={startDate ? new Date(startDate).setDate(new Date(startDate).getDate() + 1) : null}
+          <StyledLabel>Lämnas: </StyledLabel>
+          <StyledDatePicker
+            selected={endDate}
+            onChange={(date) => {
+              setEndDate(date);
+              if (startDate && date) {
+                const start = new Date(startDate);
+                const end = new Date(date);
+                const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                setRentalDays(rentalDays);
+              }
+            }}
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Välj datum"
+            minDate={startDate ? new Date(startDate).setDate(new Date(startDate).getDate() + 1) : null}
           />
 
-      </StyledForm>
-      <StyledForm>
-        <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
-      </StyledForm>
-        </StyledInfoBox>
+        </StyledForm>
+        <StyledForm>
+          <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
+        </StyledForm>
+      </StyledInfoBox>
 
       <StyledCarList>
         {cars.length > 0 && (
@@ -182,7 +182,7 @@ Välj station nedan och se tillgängliga bilar att hyra i nästa steg.<br></br><
           ))
         )}
       </StyledCarList>
-      <CarPic/>
+      <CarPic />
     </StyledContainer>
   );
 }
@@ -193,7 +193,7 @@ const StyledLabel = styled.label`
   display: block;
 `;
 const StyledTitle = styled.h1`
-color:#333;
+color:#0906aa;
 text-align: center;
 `;
 const StyledDatePicker = styled(DatePicker)`
@@ -222,7 +222,7 @@ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 `
 const StyledContainer = styled.div`
   padding: 5rem;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  background-image: url("/0.jpg");
   min-height: 100vh;
 `;
 
