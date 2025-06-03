@@ -17,7 +17,7 @@ export default function TripPlannerForm() {
       return;
     }
 
-    const message = `Jag vill resa från ${fromCity} till ${toCity} med bil. Hela restiden är ${days} dagar. Ge mig ett kort svar och separera varje dag med en ny rad,varje rad har mat tips och en turist plats och avstånd mellan städer och tidresa, det ska definieras med <br/> för radbytning, och spännande emojier.`;
+    const message = `Jag vill resa från ${fromCity} till ${toCity} med bil ge mig kortaste väg med bil. Hela restiden är ${days} dagar. Ge mig ett kort svar och separera varje dag med en ny rad,varje rad har mat tips och en turist plats och avstånd mellan städer och tidresa, det ska definieras med <br/> för radbytning, och spännande emojier. skriv hela restiden och hela avståndet efter sista rad i en ny rad. glöm inte att dag 1 ska var på en ny rad`;
 
     try {
       setLoading(true);
