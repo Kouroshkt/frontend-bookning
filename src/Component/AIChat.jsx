@@ -13,9 +13,10 @@ export default function AIChat() {
     setResponse("");
     try {
       const res = await axios.post("http://localhost:8080/ai/chat", {
-        message: message,
+        message,
       });
       setResponse(res.data);
+      setMessage("");
     } catch (err) {
       console.error(err);
       setResponse("❌ Fel vid kommunikation med servern.");
@@ -75,20 +76,22 @@ const styles = {
     bottom: 20,
     right: 20,
     zIndex: 1000,
+    maxWidth: "100vw",
   },
   floatingBtn: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#ff6f00",
     color: "white",
     border: "none",
     borderRadius: "50%",
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     fontSize: 24,
     cursor: "pointer",
     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
   },
   chatBox: {
-    width: 300,
+    width: "100%",
+    maxWidth: 500,
     backgroundColor: "#fff",
     borderRadius: 8,
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
@@ -121,6 +124,7 @@ const styles = {
     borderRadius: 4,
     fontSize: 14,
     marginBottom: 8,
+    boxSizing: "border-box",
   },
   sendBtn: {
     width: "100%",
@@ -130,6 +134,7 @@ const styles = {
     border: "none",
     borderRadius: 4,
     cursor: "pointer",
+    fontSize: 16,
   },
   response: {
     marginTop: 10,

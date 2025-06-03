@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import styled from "styled-components";
 import { useFetchData } from "../Hooks/useFetchData";
 import { Link } from "react-router-dom";
@@ -59,7 +59,7 @@ export default function Home() {
       <StyledCategories>
         {categories.map(
           (category) =>
-            category.id < 6 && (
+            category.id < 5 && (
               <StyledCategoryItem key={category.id}>
                 <StyledTitle>{category.categoryName}</StyledTitle>
                 <img src={category.categoryImage} alt=" " />
@@ -75,7 +75,7 @@ export default function Home() {
           <br />
           <b>
             <IoCheckmarkDoneSharp style={{ fontSize: "1.7rem" }} />
-            Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Kostnadsfri avbokning<br />
             <IoCheckmarkDoneSharp style={{ fontSize: "1.7rem" }} />
             Trygg och erfaren leverantör
             <br />
@@ -188,19 +188,11 @@ const StyledLabel = styled.label`
 const StyledTitle = styled.h1`
 color:#0906aa;
 text-align: center;
-`;
-const StyledDatePicker = styled(DatePicker)`
-  padding: 0.8rem;
-  font-size: 1rem;
-  width: 200px;
-  border: 1px solid #28a745;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  &:focus {
-    border-color: #2a5298;
+ @media (max-width: 768px) {
+display: none;
   }
 `;
+
 const CarLink = styled(Link)`
 
 `
@@ -213,10 +205,15 @@ font-size:16px;
 const TitleCar = styled.h3`
 font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 `
+
 const StyledContainer = styled.div`
   padding: 5rem;
   background-image: url("/0.jpg");
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
 `;
 
 const StyledForm = styled.div`
@@ -226,7 +223,13 @@ const StyledForm = styled.div`
   align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
 `;
+
 const StyledSelect = styled.select`
   padding: 0.8rem;
   font-size: 1rem;
@@ -234,12 +237,126 @@ const StyledSelect = styled.select`
   border: 1px solid #28a745;
   border-radius: 5px;
   background: white;
+
   &:hover {
     border-color: #2a5298;
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
+const StyledDatePicker = styled(DatePicker)`
+  padding: 0.8rem;
+  font-size: 1rem;
+  width: 200px;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
+  &:focus {
+    border-color: #2a5298;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const StyledInfoBox = styled.div`
+  background-color: #ffffffd1;
+  padding: 2rem;
+  width: 70%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  text-align: center;
+
+  h5 {
+    font-size: 2.5rem;
+    color: #2a5298;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  b {
+    color: #28a745;
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
+    padding: 1rem;
+
+    h5 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+`;
+
+const StyledCarItem = styled.div`
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  text-align: center;
+
+  img {
+    width: 300px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 5px;
+    margin-top: 1rem;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+
+    img {
+      transform: scale(1.5);
+    }
+  }
+
+  @media (max-width: 768px) {
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+`;
+
+const StyledCategoryItem = styled.div`
+  background: #566be598;
+  border-radius: 5px;
+  font-size: large;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  text-align: center;
+
+  img {
+    width: 250px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 5px;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+`;
 
 const StyledButton = styled.button`
   padding: 0.8rem 1.2rem;
@@ -257,6 +374,10 @@ const StyledButton = styled.button`
     background: linear-gradient(135deg, #2a5298, #1e3c72);
     transform: scale(1.05);
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StyledCarList = styled.div`
@@ -264,76 +385,24 @@ const StyledCarList = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   gap: 1.5rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
+
 const StyledCategories = styled.div`
-display: flex;
-justify-content: center;
-padding-bottom: 1rem;
-flex-wrap: wrap;
-gap: 1.5rem;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
-const StyledCarItem = styled.div`
-  background: white;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  text-align: center;
-
-  img {
-    width: 300px; 
-    height: 200px; 
-    object-fit: contain;
-    border-radius: 5px;
-    margin-top: 1rem;
-  }
-  &:hover {
-    transform: scale(1.05);
-    img {
-      transform: scale(1.5);
-    }
-  }
-`;
-const StyledCategoryItem = styled.div`
-background: #566be598;
-border-radius: 5px;
-font-size: large;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-padding: 1rem;
-text-align: center;
-img {
-    width: 300px; 
-    height: 200px; 
-    object-fit: contain;
-    border-radius: 5px;
-    margin-top: 1rem;
-  }
-`;
-const StyledInfoBox = styled.div`
-  background-color: #ffffffd1;
-  padding: 2rem;
-  width: 70%;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-
-  h5 {
-    font-size: 3rem;
-    color: #2a5298;
-    margin-bottom: 1rem;
-  }
-
-  p {
-    font-size: 1.5rem;
-    line-height: 1.6;
-    margin: 0.5rem 0;
-  }
-
-  b {
-    color: #28a745;
-  }
-`;
 
