@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useFetchData } from "../Hooks/useFetchData";
 import { Link } from "react-router-dom";
@@ -140,8 +140,8 @@ export default function Home() {
             minDate={
               startDate
                 ? new Date(startDate).setDate(
-                    new Date(startDate).getDate() + 1
-                  )
+                  new Date(startDate).getDate() + 1
+                )
                 : null
             }
           />
@@ -151,7 +151,6 @@ export default function Home() {
           <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
         </StyledForm>
       </StyledInfoBox>
-      <TripPlannerForm />
 
       <StyledCarList>
         {cars.length > 0 &&
@@ -176,6 +175,7 @@ export default function Home() {
             </StyledCarItem>
           ))}
       </StyledCarList>
+      <TripPlannerForm />
       <CarPic />
     </StyledContainer>
   );
