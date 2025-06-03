@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { CarPic } from "../Component/CarPic";
+import TripPlannerForm from "../Component/TripPlannerForm";
 
 export default function Home() {
   const { categories, cities } = useFetchData();
@@ -150,6 +151,7 @@ export default function Home() {
           <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
         </StyledForm>
       </StyledInfoBox>
+      <TripPlannerForm />
 
       <StyledCarList>
         {cars.length > 0 &&
