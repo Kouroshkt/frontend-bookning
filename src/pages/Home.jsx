@@ -6,12 +6,9 @@ import DatePicker from "react-datepicker";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { CarPic } from "../Component/CarPic";
 
-
 export default function Home() {
   const { categories, cities } = useFetchData();
-  const [categoriesByCityId, setCategoriesByCityId] = useState([]);
   const [cityId, setCityId] = useState(null);
-  const [categoryId, setCategoryId] = useState(null);
   const [cars, setCars] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -33,24 +30,8 @@ export default function Home() {
     }).format(date);
   };
 
-  useEffect(() => {
-    if (cityId !== null) {
-      async function fetchCategoriesByCityId() {
-        try {
-          const response = await fetch(`${baseUrl}/category/getcategory/${cityId}`);
-          const data = await response.json();
-          setCategoriesByCityId(data || []);
-        } catch (error) {
-          console.error("Failed to fetch categories by city ID:", error);
-        }
-      }
-      fetchCategoriesByCityId();
-    }
-
-  }, [cityId]);
-
   const ShowCar = async () => {
-    if (!cityId || !categoryId || !startDate || !endDate) {
+    if (!cityId || !startDate || !endDate) {
       alert("För att fortsätta, vänligen fyll i alla obligatoriska fält.");
       return;
     }
@@ -60,10 +41,12 @@ export default function Home() {
       const formattedEndDate = formatDate(new Date(endDate));
       setStartDateToApi(formattedStartDate);
       setEndDateToApi(formattedEndDate);
-      const response = await fetch(`${baseUrl}/car/getcarbyDate?cityId=${cityId}
-        &carCategoryId=${categoryId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
+
+      const response = await fetch(
+        `${baseUrl}/car/getcarbyDate?cityId=${cityId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+      );
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       setCars(data || []);
     } catch (error) {
       console.error("Failed to fetch cars:", error);
@@ -72,33 +55,52 @@ export default function Home() {
 
   return (
     <StyledContainer>
-      <StyledTitle> Våras kategori bilar </StyledTitle>
+      <StyledTitle>Våras kategori bilar</StyledTitle>
       <StyledCategories>
-        {categories.map((category) => (category.id < 6 &&
-          <StyledCategoryItem>
-            <StyledTitle>{category.categoryName}</StyledTitle>
-            <img src={category.categoryImage} alt=" " />
-            <p>{category.description}</p>
-          </StyledCategoryItem>
-        ))
-        }
+        {categories.map(
+          (category) =>
+            category.id < 6 && (
+              <StyledCategoryItem key={category.id}>
+                <StyledTitle>{category.categoryName}</StyledTitle>
+                <img src={category.categoryImage} alt=" " />
+                <p>{category.description}</p>
+              </StyledCategoryItem>
+            )
+        )}
       </StyledCategories>
+
       <StyledInfoBox>
         <h5>Boka hyrbil online</h5>
-        <p><br></br><b> <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
-          Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <IoCheckmarkDoneSharp style={{ fontSize: '1.7rem' }} />
-          Trygg och erfaren leverantör<br></br><br></br></b></p>
-        <p>Hos oss kan du hyra bil i hela Sverige. Boka enkelt och välj bland ett stort utbud av hyrbilar, hos våra fantastiska biluthyrare på fler än 10 orter från norr till söder.
-          Välj station nedan och se tillgängliga bilar att hyra i nästa steg.<br></br><br></br></p>
+        <p>
+          <br />
+          <b>
+            <IoCheckmarkDoneSharp style={{ fontSize: "1.7rem" }} />
+            Kostnadsfri avbokning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <IoCheckmarkDoneSharp style={{ fontSize: "1.7rem" }} />
+            Trygg och erfaren leverantör
+            <br />
+            <br />
+          </b>
+        </p>
+        <p>
+          Hos oss kan du hyra bil i hela Sverige. Boka enkelt och välj bland ett
+          stort utbud av hyrbilar, hos våra fantastiska biluthyrare på fler än
+          10 orter från norr till söder. Välj station nedan och se tillgängliga
+          bilar att hyra i nästa steg.
+          <br />
+          <br />
+        </p>
+
         <StyledForm>
           <StyledSelect
             onChange={(e) => {
-              const selectedCity = cities.find((city) => city.cityName === e.target.value);
+              const selectedCity = cities.find(
+                (city) => city.cityName === e.target.value
+              );
               if (selectedCity) {
                 setCityId(selectedCity.id);
               } else {
                 setCityId(null);
-                setCategoriesByCityId([]);
               }
             }}
           >
@@ -110,25 +112,6 @@ export default function Home() {
             ))}
           </StyledSelect>
 
-          <StyledSelect
-            onChange={(e) => {
-              const selectedCategory = categoriesByCityId.find(
-                (category) => category.categoryName === e.target.value
-              );
-              if (selectedCategory) {
-                setCategoryId(selectedCategory.id);
-              } else {
-                setCategoryId(null);
-              }
-            }}
-          >
-            <option value="">Välj biltyp</option>
-            {categoriesByCityId.map((category) => (
-              <option key={category.id} value={category.categoryName}>
-                {category.categoryName}
-              </option>
-            ))}
-          </StyledSelect>
           <StyledLabel>Hämtas: </StyledLabel>
           <StyledDatePicker
             selected={startDate}
@@ -145,27 +128,39 @@ export default function Home() {
               if (startDate && date) {
                 const start = new Date(startDate);
                 const end = new Date(date);
-                const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                const rentalDays = Math.ceil(
+                  (end - start) / (1000 * 60 * 60 * 24)
+                );
                 setRentalDays(rentalDays);
               }
             }}
             dateFormat="yyyy-MM-dd"
             placeholderText="Välj datum"
-            minDate={startDate ? new Date(startDate).setDate(new Date(startDate).getDate() + 1) : null}
+            minDate={
+              startDate
+                ? new Date(startDate).setDate(
+                    new Date(startDate).getDate() + 1
+                  )
+                : null
+            }
           />
-
         </StyledForm>
+
         <StyledForm>
           <StyledButton onClick={() => ShowCar()}>FORTSÄTT</StyledButton>
         </StyledForm>
       </StyledInfoBox>
 
       <StyledCarList>
-        {cars.length > 0 && (
+        {cars.length > 0 &&
           cars.map((car) => (
             <StyledCarItem key={car.id}>
-              <CarLink to={`/carinfo/${car.id}/${startDateToApi}/${endDateToApi}/${rentalDays}`}>
-                <TitleCar>{car.brand} {car.model}</TitleCar>
+              <CarLink
+                to={`/carinfo/${car.id}/${startDateToApi}/${endDateToApi}/${rentalDays}`}
+              >
+                <TitleCar>
+                  {car.brand} {car.model}
+                </TitleCar>
                 <DescriptionCar>
                   {car.color} ({car.seats} säten)
                 </DescriptionCar>
@@ -173,19 +168,17 @@ export default function Home() {
                   {car.carCategory.categoryName}
                 </DescriptionCar>
                 <CityCar>{car.city.cityName}</CityCar>
-                <DescriptionCar>
-                  {car.price}kr
-                </DescriptionCar>
+                <DescriptionCar>{car.price}kr</DescriptionCar>
                 <img src={car.image} alt="Car image" />
               </CarLink>
             </StyledCarItem>
-          ))
-        )}
+          ))}
       </StyledCarList>
       <CarPic />
     </StyledContainer>
   );
 }
+
 const StyledLabel = styled.label`
   font-size: 1rem;
   font-weight: bold;
