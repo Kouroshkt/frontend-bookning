@@ -17,7 +17,7 @@ export default function TripPlannerForm() {
       return;
     }
 
-const message = `Jag vill resa från ${fromCity} till ${toCity} med bil.\nHela restiden är ${days} dagar.\nGe mig ett kort svar och separera varje dag med en ny rad och spännande emojier.`;
+    const message = `Jag vill resa från ${fromCity} till ${toCity} med bil. Hela restiden är ${days} dagar. Ge mig ett kort svar och separera varje dag med en ny rad,varje rad har mat tips och en turist plats och avstånd mellan städer och tidresa, det ska definieras med <br/> för radbytning, och spännande emojier.`;
 
     try {
       setLoading(true);
@@ -73,10 +73,11 @@ const message = `Jag vill resa från ${fromCity} till ${toCity} med bil.\nHela r
           </Button>
 
           {error && <ErrorText>{error}</ErrorText>}
+
           {response && (
             <ResponseBox>
               <strong>AI:</strong>
-              <p>{response}</p>
+              <p dangerouslySetInnerHTML={{ __html: response }} />
             </ResponseBox>
           )}
         </>
@@ -137,7 +138,6 @@ const Button = styled.button`
     cursor: not-allowed;
   }
 `;
-
 
 const ResponseBox = styled.div`
   margin-top: 1.5rem;
