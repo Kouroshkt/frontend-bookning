@@ -25,6 +25,15 @@ export function Profile() {
     }
   }, []);
 
+  // Visa meddelande om användaren inte är inloggad
+  if (!user) {
+    return (
+      <Container>
+        <ErrorMessage>Du är inte inloggad. Vänligen logga in för att se din profil.</ErrorMessage>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Header>Hej {user.name}</Header>
@@ -64,6 +73,7 @@ export function Profile() {
     </Container>
   );
 }
+
 const Container = styled.div`
   max-width: 900px;
   margin: 0 auto;
@@ -105,4 +115,12 @@ const Td = styled.td`
 const NoBookings = styled.p`
   color: #888;
   margin-top: 1rem;
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 2rem;
 `;

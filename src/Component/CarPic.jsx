@@ -29,6 +29,9 @@ const SliderContainer = styled.div`
   overflow: hidden;
   border-radius: 15px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  @media (max-width:768px) {
+    width:95% ;
+  }
 `;
 
 const CarImage = styled.img`

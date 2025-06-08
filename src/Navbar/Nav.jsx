@@ -1,29 +1,60 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { useState } from "react";
+
 
 export default function Navigation() {
   const user = JSON.parse(localStorage.getItem("user"));
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+  const closeMenu = () => setIsOpen(false);
+
   return (
     <StyledNavbar>
-      <Logo to="/"><LogoImg src="logo.jpeg" alt="" /></Logo>
-      <Menu>
-        {user && (<StyledLink to="/profile">Mitt konto</StyledLink>)}
-        <StyledLink to="/about">Om oss</StyledLink>
-        <StyledLink to="/contact">Hitta oss</StyledLink>
-        {!user ? (<StyledLink to="/createaccount">Skapa konto</StyledLink>) 
-        : (<StyledHello   as="a" >Hej {user.name}</StyledHello>)}
-          {!user ? (
-            <StyledLink to="/signin">Logga in</StyledLink>
-          ) : (
-            <StyledLink
-              onClick={() => {
-                localStorage.clear();
-                window.location.reload();
-              }}
-            >
-              Logga ut
-            </StyledLink>
-          )}
+      <Logo to="/" onClick={closeMenu}>
+        <LogoImg src="logo.jpeg" alt="Logo" />
+      </Logo>
+
+      <Hamburger onClick={toggleMenu}>
+        <span />
+        <span />
+        <span />
+      </Hamburger>
+
+      <Menu isOpen={isOpen}>
+        {user && (
+          <StyledLink to="/profile" onClick={closeMenu}>
+            Mitt konto
+          </StyledLink>
+        )}
+        <StyledLink to="/about" onClick={closeMenu}>
+          Om oss
+        </StyledLink>
+        <StyledLink to="/contact" onClick={closeMenu}>
+          Hitta oss
+        </StyledLink>
+        {!user ? (
+          <StyledLink to="/createaccount" onClick={closeMenu}>
+            Skapa konto
+          </StyledLink>
+        ) : (
+          <StyledHello>Hej {user.name}</StyledHello>
+        )}
+        {!user ? (
+          <StyledLink to="/signin" onClick={closeMenu}>
+            Logga in
+          </StyledLink>
+        ) : (
+          <StyledLogout
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Logga ut
+          </StyledLogout>
+        )}
       </Menu>
     </StyledNavbar>
   );
@@ -33,25 +64,38 @@ const StyledNavbar = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  //background: #030438; 
-  background-color:  #04162C;
+  background-color: #04162C;
   padding: 1rem 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 `;
-const LogoImg= styled.img`
-width: 120px;
-`
-const Logo = styled(Link)`
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  text-decoration: none;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  transition: transform 0.3s ease;
 
-  &:hover {
-    transform: scale(1.1);
+const Logo = styled(Link)`
+  text-decoration: none;
+`;
+
+const LogoImg = styled.img`
+  width: 120px;
+
+  @media (max-width: 768px) {
+    width: 90px;
+  }
+`;
+
+const Hamburger = styled.div`
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+
+  span {
+    height: 3px;
+    width: 25px;
+    background: white;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
   }
 `;
 
@@ -59,15 +103,28 @@ const Menu = styled.ul`
   display: flex;
   list-style: none;
   gap: 1.5rem;
- 
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    background-color: #04162C;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 90%;
+    padding: 1rem;
+    display: ${props => (props.isOpen ? "flex" : "none")};
+    z-index: 10;
+  }
 `;
 
 const StyledLink = styled(Link)`
   color: white;
   font-size: 1rem;
   text-decoration: none;
-  position: relative;
   font-weight: 500;
+  position: relative;
+  background: none;
+  border: none;
 
   &:hover {
     color: #c0dffc;
@@ -88,9 +145,22 @@ const StyledLink = styled(Link)`
     width: 100%;
   }
 `;
-const StyledHello = styled(Link)`
+
+const StyledHello = styled.span`
   color: white;
   font-size: 1rem;
-  text-decoration: none;
   font-weight: 500;
+`;
+
+const StyledLogout = styled.button`
+  color: white;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    color: #c0dffc;
+  }
 `;

@@ -96,26 +96,7 @@ export default function Footer() {
         </FooterSection>
     );
 }
-const ButtonEmail = styled.button`
-height: 33px;
-color: white;
-background-color: #073874;
-transition: color 0.4s ease;
-border-radius: 5px;
-font-size: 13px;
-border: none;
-&:hover {
-    background-color: #daddf4;
-    color: #151515;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-`
-const EmailSending = styled.div`
-`
-const InputEmail = styled.input`
-height: 27px;
-width: 200px;
-`
+
 
 const News = styled.div`
 
@@ -143,22 +124,13 @@ font-weight: 350;
 const Information = styled.div`
 `
 
-const BottomSection = styled.div`
-display: flex;
-flex-direction: row;
-justify-content: space-evenly;
-color: white;
-
-`
 
 const Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: #dacad376;
 `
-const LogoImg = styled.img`
-width: 230px;
-`
+
 const EmailInfo = styled.div`
 text-align:center;
 `
@@ -175,16 +147,7 @@ font-size: 35px;
 margin-top:20px;
 margin-bottom: 5px;
 `
-const FooterSection = styled.div`
-background-color: #04162C;
-height: 380px;
-`
-const ContactInfo = styled.div`
- display: flex;
- flex-direction: row;
- justify-content: space-evenly;
 
-`
 const PhoneInfo = styled.div`
 text-align:center;
 `
@@ -199,3 +162,93 @@ margin-top:9px;
 margin-bottom: 5px;
 font-weight: 400;
 `
+const FooterSection = styled.div`
+  background-color: #04162C;
+  padding: 20px;
+  height: auto;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
+const ContactInfo = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+`;
+
+const BottomSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  color: white;
+  gap: 40px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+`;
+
+const LogoImg = styled.img`
+  width: 230px;
+
+  @media (max-width: 768px) {
+    width: 180px;
+  }
+`;
+
+const InputEmail = styled.input`
+  height: 30px;
+  width: 200px;
+  padding: 5px;
+  margin-top: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 250px;
+  }
+`;
+
+const EmailSending = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const ButtonEmail = styled.button`
+  height: 33px;
+  color: white;
+  background-color: #073874;
+  transition: color 0.4s ease;
+  border-radius: 5px;
+  font-size: 13px;
+  border: none;
+  padding: 5px 15px;
+
+  &:hover {
+    background-color: #daddf4;
+    color: #151515;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 150px;
+  }
+`;
